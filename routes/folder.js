@@ -25,6 +25,7 @@ const upload = multer({
             cb(null, { fieldName: file.fieldname, contentType: file.mimetype, contentDisposition: 'inline' });
         },
         key: function (req, file, cb) {
+            console.log(file)
             cb(null, `gallery/${Date.now().toString()}.jpeg`)
         }
     }),
