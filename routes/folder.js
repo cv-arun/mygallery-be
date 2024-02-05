@@ -5,6 +5,10 @@ const multer = require('multer')
 const { uploadImageAndSave, getAllImages } = require('../controllers/folder');
 const multerS3 = require('multer-s3')
 const { S3Client } = require('@aws-sdk/client-s3')
+const multer = require('multer');
+
+// Define Multer storage and limits
+const storage = multer.memoryStorage();
 
 const s3 = new S3Client({
     region: 'us-west-2',
@@ -32,7 +36,7 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 15 }
 })
 
-router.post('/upload-image', upload.array('photos', 1), uploadImageAndSave)
+router.post('/upload-image', uploadImageAndSave)
 router.get('/images', getAllImages)
 
 
