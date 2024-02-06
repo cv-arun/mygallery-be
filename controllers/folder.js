@@ -10,9 +10,9 @@ exports.uploadImageAndSave = async (req, res, next) => {
         logger(res?.locals?.reqId, FILE_NAME, "upload image start", req.body);
 
         console.log(req.files)
-        const file = req.files[0]
-         const image = new Folder({imageUrl: file.location})
-           await image.save()
+        // const file = req.files[0]
+        //  const image = new Folder({imageUrl: file.location})
+        //    await image.save()
 
         
         res.send({ message:file.location })
