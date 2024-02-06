@@ -36,7 +36,7 @@ const upload = multer({
     limits: { fileSize: 1024 * 1024 * 15 }
 })
 
-router.post('/upload-image', uploadImageAndSave)
+router.post('/upload-image',upload.single('photos'), uploadImageAndSave)
 router.get('/images', getAllImages)
 
 
