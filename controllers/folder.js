@@ -15,7 +15,7 @@ exports.uploadImageAndSave = async (req, res, next) => {
         //    await image.save()
 
         
-        res.send({ message:file.location })
+        res.send('file')
     } catch (error) {
         console.log(error)
         next(error)
