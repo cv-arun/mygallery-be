@@ -28,10 +28,6 @@ const connectDB = async () => {
   }
 
 app.use('/api/user', userRouter)
-app.use('/', (req, res, next) => {
-    console.log('checkin')
-    next()
-})
 app.use('/api/folder', folderRoute)
 app.use(errorHandler)
 
