@@ -23,3 +23,9 @@ exports.verifyToken = async (req, res, next) => {
       });
     }
   };
+
+  exports.signToken = async (payload) => {
+
+    return jwt.sign(payload,process.env.JWT_SECRETKEY,{expiresIn:'24h'})
+
+  }
