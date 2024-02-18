@@ -12,7 +12,8 @@ exports.newFolder = async (req, res, next) => {
 
         await Folder.create({
             name: req.body.name,
-            parent: req.body.parent
+            parent: req.body.parent,
+            user: res.locals.user_id
         })
 
         res.send('folder created')
@@ -25,11 +26,21 @@ exports.newFolder = async (req, res, next) => {
 exports.getFolders = async (req, res, next) => {
     try {
         logger(res?.locals?.reqId, FILE_NAME, "get folder", req.params);
-        let id = req.params.id
-        let folders = await Folder.find({ _id: id })
-        let childFolder = await Folder.find({ parent: id })
 
-        console.log(folders, "---------------------------------", childFolder)
+        let id = req.params.id
+        let rootFolder = req.params.rootfolder
+        let query = { _id: id }
+        if (rootFolder=="true") {
+            query = { status: 'root' }
+        }
+
+        let folders = await Folder.findOne({ ...query, user: res.locals.user_id })
+
+        logger(res?.locals?.reqId, FILE_NAME, "get folder middle", { folders });
+        if (rootFolder) {
+            id = folders._id
+        }
+        let childFolder = await Folder.find({ parent: id, user: res.locals.user_id })
         res.json({
             folder: folders,
             children: childFolder

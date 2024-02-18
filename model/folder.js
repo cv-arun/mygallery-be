@@ -15,7 +15,10 @@ const folderSchema = new Schema({
     parent: {
         type: Schema.Types.ObjectId,
         ref: 'Folder',
-        default:'65bf568ba440c9edf7f8cacb'
+    },
+    user:{
+        type: Schema.Types.ObjectId,
+        ref: 'Users',
     }
 })
 

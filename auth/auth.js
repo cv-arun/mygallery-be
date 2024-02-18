@@ -1,31 +1,31 @@
 const jwt = require('jsonwebtoken')
 const secretKey = process.env.JWT_SECRETKEY
-
+const { logger } = require('../utils/logger')
+const FILE_NAME = '/auth/auth.js'
 
 // Authorization: Bearer <TOKEN>
 exports.verifyToken = async (req, res, next) => {
-    try {
-      var bearerHeader = req.headers["authorization"];
-      if (typeof bearerHeader === "undefined")
-        return res.status(403).json({
-          message: "No token provided",
-        });
-  
-      const bearerToken = bearerHeader.split(" ")[1];
-      const decoded = jwt.verify(bearerToken, secretKey);
-      logger(res?.locals?.reqId, FILE_NAME, "Verify token decoded", decoded);
-      res.locals.user_id = decoded.id;
-      next();
-    } catch (error) {
-      logger(res?.locals?.reqId, FILE_NAME, "Verify token error", error);
-      return res.status(401).json({
-        message: "Unauthorized",
+  try {
+    var bearerHeader = req.headers["authorization"];
+    if (typeof bearerHeader === "undefined")
+      return res.status(403).json({
+        message: "No token provided",
       });
-    }
-  };
-
-  exports.signToken = async (payload) => {
-
-    return jwt.sign(payload,process.env.JWT_SECRETKEY,{expiresIn:'24h'})
-
+    const bearerToken = bearerHeader.split(" ")[1];
+    const decoded = jwt.verify(bearerToken, secretKey);
+    logger(res?.locals?.reqId, FILE_NAME, "Verify token decoded", decoded);
+    res.locals.user_id = decoded.id;
+    next();
+  } catch (error) {
+    logger(res?.locals?.reqId, FILE_NAME, "Verify token error", error);
+    return res.status(401).json({
+      message: "Unauthorized",
+    });
   }
+};
+
+exports.signToken = async (payload) => {
+
+  return jwt.sign(payload, process.env.JWT_SECRETKEY, { expiresIn: '24h' })
+
+}

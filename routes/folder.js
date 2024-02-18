@@ -5,6 +5,7 @@ const multer = require('multer')
 const { uploadImageAndSave, getAllImages, newFolder, getFolders } = require('../controllers/folder');
 const multerS3 = require('multer-s3')
 const { S3Client } = require('@aws-sdk/client-s3')
+const {verifyToken} = require('../auth/auth')
 
 
 // Define Multer storage and limits
@@ -39,8 +40,8 @@ const upload = multer({
 router.post('/upload-image', upload.single('photos'), uploadImageAndSave)
 router.get('/images', getAllImages)
 
-router.post('/new-folder', newFolder)
-router.get('/folders/:id', getFolders)
+router.post('/new-folder',verifyToken, newFolder)
+router.get('/folders/:id/:rootfolder',verifyToken, getFolders)
 
 
 
