@@ -7,13 +7,13 @@ const {
   
   // const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
   
-  const config =  require('../config.js');
+
   
-  const bucketName = config.AWS_BUCKET_NAME;
-  const region = config.AWS_BUCKET_REGION;
-  const accessKeyId = config.AWS_ACCESS_KEY;
-  const secretAccessKey = config.AWS_SECRET_ACCESS_KEY;
-  const assetsRoot = config.ASSETS_BASE_URL;
+  const bucketName = process.env.S3_BUCKET;
+  const region = process.env.AWS_REGION;
+  const accessKeyId = process.env.AWS_ACCESS_KEY;
+  const secretAccessKey = process.env.AWS_SECRET_KEY;
+  const assetsRoot = process.env.ASSETS_BASE_URL;
   
   const s3Client = new S3Client({
     region,
@@ -23,15 +23,14 @@ const {
     },
   });
   
- 
-  
+
   function uploadFile(fileBuffer, fileName, mimetype) {
     const uploadParams = {
       Bucket: bucketName,
       Body: fileBuffer,
       Key: fileName,
       ContentType: mimetype,
-      ACL: "public-read",
+      // ACL: "public-read",
     };
   
     return s3Client.send(new PutObjectCommand(uploadParams));
@@ -42,16 +41,17 @@ const {
       Bucket: bucketName,
       Key: fileName,
     };
-  
+
     return s3Client.send(new DeleteObjectCommand(deleteParams));
   }
   
-  async function getObjectSignedUrl(key) {
-    const url = `${assetsRoot}/${key}`;
-    return url;
+  async function getObjectUrl(key) {
+    return `${assetsRoot}/${key}`;
   }
+
+
   
   
   
-  module.exports = { uploadFile, deleteFile, getObjectSignedUrl };
+  module.exports = { uploadFile, deleteFile,getObjectUrl };
   
