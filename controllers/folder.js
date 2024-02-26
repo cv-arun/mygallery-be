@@ -42,9 +42,16 @@ exports.getFolders = async (req, res, next) => {
             id = folders._id
         }
         let childFolder = await Folder.find({ parent: id, user: res.locals.user_id })
+
+        const imageKeys = await Image.find({folder:id,user:res.locals.user_id})
+        let images=[]
+         for(let img of imageKeys){
+            images.push({uri: await getObjectUrl(img.imageKey)})
+         }
         res.json({
             folder: folders,
-            children: childFolder
+            children: childFolder,
+            images
         })
 
     } catch (error) {
