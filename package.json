@@ -20,7 +20,9 @@
   "homepage": "https://github.com/mpower-agency/nodejs-express-boilerplate#readme",
   "dependencies": {
     "@aws-sdk/client-s3": "^3.504.0",
-    "aws-sdk": "^2.1550.0",
+    "@aws-sdk/cloudfront-signer": "^3.521.0",
+    "@aws-sdk/s3-request-presigner": "^3.521.0",
+    "aws-sdk": "^2.1565.0",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
