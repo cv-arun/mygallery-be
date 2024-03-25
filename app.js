@@ -9,6 +9,8 @@ const errorHandler = require('./middlewares/errorHandler')
 const userRouter = require('./routes/user')
 const folderRoute = require('./routes/folder')
 const mongoose = require('mongoose')
+const { v4: uuidv4 } = require('uuid');
+const {logger} = require('./utils/logger')
 
 
 
@@ -26,6 +28,12 @@ const connectDB = async () => {
       process.exit(1);
     }
   }
+
+  app.use(function (req, res, next) {
+    res.locals.reqId = uuidv4();
+    logger(res?.locals?.reqId, "app.js", "request received", {});
+    next();
+  });
 
 app.use('/api/user', userRouter)
 app.use('/api/folder', folderRoute)

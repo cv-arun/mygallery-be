@@ -4,6 +4,7 @@ const { logger } = require('../utils/logger')
 const FILE_NAME = 'controllers/folder.js';
 const Image = require('../model/image')
 const Folder = require('../model/folder')
+const {uploadFile,getObjectUrl} = require('../utils/s3')
 const fs = require('fs');
 
 exports.newFolder = async (req, res, next) => {
@@ -41,9 +42,16 @@ exports.getFolders = async (req, res, next) => {
             id = folders._id
         }
         let childFolder = await Folder.find({ parent: id, user: res.locals.user_id })
+
+        const imageKeys = await Image.find({folder:id,user:res.locals.user_id})
+        let images=[]
+         for(let img of imageKeys){
+            images.push({uri: await getObjectUrl(img.imageKey)})
+         }
         res.json({
             folder: folders,
-            children: childFolder
+            children: childFolder,
+            images
         })
 
     } catch (error) {
@@ -56,13 +64,19 @@ exports.uploadImageAndSave = async (req, res, next) => {
     try {
         logger(res?.locals?.reqId, FILE_NAME, "upload image start", req.body);
 
-        console.log(req.file, "---------------------------------")
-        const file = req.file
-        const imageLocation = new Image({ imageUrl: file.location })
+        const file = req.files['photos'][0]
+        const fileExtension= file.originalname.split('.')[file.originalname.split('.').length-1]
+        let fileName = `${res.locals.user_id}/${req.body.folderId}/${new Date().getTime()}.${fileExtension?fileExtension:'jpeg'}`
+        
+        await uploadFile(file.buffer,fileName,file.mimetype);
+        logger(res?.locals?.reqId, FILE_NAME, "upload image middle", {});
+        
+        const imageLocation = new Image({ imageKey:fileName,folder:req.body.folderId,user:res.locals.user_id })
         await imageLocation.save()
+        logger(res?.locals?.reqId, FILE_NAME, "upload image end", {});
 
 
-        res.send('file')
+        res.send('Image saved successfully')
     } catch (error) {
         console.log(error)
         next(error)
@@ -70,9 +84,15 @@ exports.uploadImageAndSave = async (req, res, next) => {
 }
 exports.getAllImages = async (req, res, next) => {
     try {
-        logger(res?.locals?.reqId, FILE_NAME, "getAllImages", req.body);
+        logger(res?.locals?.reqId, FILE_NAME, "getAllImages", req.params.id);
+        const id = req.params.id
+        const userId = res.locals.user_id
 
-        let images = await Image.find({})
+        const imageKeys = await Image.find({folder:id,user:userId})
+        let images=[]
+         for(let img of images){
+            images.push({uri:getObjectUrl(img)})
+         }
         res.json({ images })
     } catch (error) {
         next(error)

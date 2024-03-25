@@ -8,8 +8,7 @@ const { S3Client } = require('@aws-sdk/client-s3')
 const {verifyToken} = require('../auth/auth')
 
 
-// Define Multer storage and limits
-const storage = multer.memoryStorage();
+
 
 const s3 = new S3Client({
     region: 'us-west-2',
@@ -19,26 +18,26 @@ const s3 = new S3Client({
     },
 })
 
-// const storage = multer.memoryStorage();
-// const upload = multer({storage: storage, limits: { fileSize: 2e+7 }});
+const storage = multer.memoryStorage();
+const upload = multer({storage: storage, limits: { fileSize: 2e+7 }});
 
-const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.S3_BUCKET,
-        metadata: function (req, file, cb) {
-            cb(null, { fieldName: file.fieldname, contentType: file.mimetype, contentDisposition: 'inline' });
-        },
-        key: function (req, file, cb) {
-            console.log(file)
-            cb(null, `gallery/${Date.now().toString()}.jpeg`)
-        }
-    }),
-    limits: { fileSize: 1024 * 1024 * 15 }
-})
+// const upload = multer({
+//     storage: multerS3({
+//         s3: s3,
+//         bucket: process.env.S3_BUCKET,
+//         metadata: function (req, file, cb) {
+//             cb(null, { fieldName: file.fieldname, contentType: file.mimetype, contentDisposition: 'inline' });
+//         },
+//         key: function (req, file, cb) {
+//             console.log(file)
+//             cb(null, `gallery/${Date.now().toString()}.jpeg`)
+//         }
+//     }),
+//     limits: { fileSize: 1024 * 1024 * 15 }
+// })
 
-router.post('/upload-image', upload.single('photos'), uploadImageAndSave)
-router.get('/images', getAllImages)
+router.post('/upload-image',verifyToken, upload.fields([{name: 'photos', maxCount: 1}]), uploadImageAndSave)
+router.get('/images/:id',verifyToken, getAllImages)
 
 router.post('/new-folder',verifyToken, newFolder)
 router.get('/folders/:id/:rootfolder',verifyToken, getFolders)
